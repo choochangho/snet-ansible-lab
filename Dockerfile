@@ -9,7 +9,7 @@ ENV TZ=Asia/Seoul
 ARG DEBIAN_FRONTEND=noninteractive
 
 # kakao mirror 
-RUN sed -i -e 's/archive\.ubuntu\.com/mirror\.kakao\.com/' /etc/apt/sources.list
+RUN sed -i -e 's/archive\.ubuntu\.com/ftp\.kaist\.ac\.kr/' /etc/apt/sources.list
 
 RUN apt update \
   && apt install -qq -y init systemd \
