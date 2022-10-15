@@ -17,7 +17,7 @@ $ git clone https://github.com/choochangho/snet-ansible-lab.git .
 
 # Dockerfile 수정
 
-호스트의 CPU 아키텍쳐에 맞는 이미지 사용하도록 수정
+docker-compose.yaml에서 호스트의 CPU 아키텍쳐에 맞는 이미지 사용하도록 수정
 
 ```Docker
 
