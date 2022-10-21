@@ -27,8 +27,11 @@ services:
       context: ./
       dockerfile: Dockerfile-ansible
     ports:
+      # SSH
       - "2220:22"
+      # shellinabox
       - "4200:4200"
+      # dashboard
       - "8000:80"
     privileged: true
     cap_add:
@@ -36,6 +39,8 @@ services:
     command: /sbin/init
     depends_on:
       - db
+    volumes:
+      - ./ansible:/home/vagrant/ansible
 
   server1:
     hostname: server1
