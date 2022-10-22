@@ -9,7 +9,7 @@ ENV TZ=Asia/Seoul
 ARG DEBIAN_FRONTEND=noninteractive
 
 # kakao mirror 
-RUN sed -i -e 's/archive\.ubuntu\.com/ftp\.kaist\.ac\.kr/' /etc/apt/sources.list
+RUN sed -i -e 's/archive\.ubuntu\.com/mirror\.kakao\.com/' /etc/apt/sources.list
 
 RUN apt update \
   && apt install -qq -y init systemd \
@@ -22,8 +22,8 @@ RUN apt update \
 
 # Install system dependencies, you may not need all of these
 RUN apt-get install -y --no-install-recommends ssh sudo libffi-dev systemd openssh-client
-RUN apt-get -y install net-tools iputils-ping
-RUN  apt-get -y install git libssl-dev libpam0g-dev zlib1g-dev dh-autoreconf shellinabox
+RUN apt update && apt-get -y install net-tools iputils-ping git
+# RUN  apt-get -y install git libssl-dev libpam0g-dev zlib1g-dev dh-autoreconf shellinabox
 
 # Add vagrant user and key for SSH
 RUN useradd --create-home -s /bin/bash vagrant
@@ -45,8 +45,12 @@ RUN /usr/sbin/sshd
 
 # Start shellinabox
 EXPOSE 4200
-RUN sed -i -e 's/SHELLINABOX_ARGS="--no-beep"/SHELLINABOX_ARGS="--no-beep --disable-ssl"/' /etc/default/shellinabox
-RUN service shellinabox start
+RUN apt-get -y install cmake libjson-c-dev libwebsockets-dev
+RUN git clone https://github.com/tsl0922/ttyd.git
+RUN cd ttyd && mkdir build && cd build && cmake .. && make && make install
+RUN nohup ttyd -p 4200 /bin/bash > /dev/null 2>&1 &
+# RUN sed -i -e 's/SHELLINABOX_ARGS="--no-beep"/SHELLINABOX_ARGS="--no-beep --disable-ssl"/' /etc/default/shellinabox
+# RUN service shellinabox start
 
 # Start Systemd (systemctl)
 CMD ["/sbin/init"]
