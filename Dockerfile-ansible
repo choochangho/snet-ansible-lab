@@ -22,7 +22,7 @@ RUN apt update \
 
 # Install system dependencies, you may not need all of these
 RUN apt-get install -y --no-install-recommends ssh sudo libffi-dev systemd openssh-client
-RUN apt update && apt-get install -y net-tools iputils-ping git
+RUN apt update && apt-get install -y net-tools iputils-ping git wget
 # RUN apt-get -y install git libssl-dev libpam0g-dev zlib1g-dev dh-autoreconf shellinabox
 
 # ansible
@@ -44,26 +44,30 @@ RUN chown -R vagrant:vagrant /home/vagrant/.ssh
 RUN sed -i -e 's/Defaults.*requiretty/#&/' /etc/sudoers
 RUN sed -i -e 's/\(UsePAM \)yes/\1 no/' /etc/ssh/sshd_config
 
+RUN wget https://raw.githubusercontent.com/gdraheim/docker-systemctl-replacement/master/files/docker/systemctl3.py -O /usr/bin/systemctl
+RUN chmod +x /usr/bin/systemctl
+
 # Dashboard
 RUN apt-get install -y nginx
-RUN service nginx start
+RUN systemctl start nginx
+# RUN systemctl start nginx
 COPY dashboard/index.html /var/www/html
 COPY dashboard/dist /var/www/html/dist
+
+# Start ttyd
+EXPOSE 4200
+RUN apt-get install -y cmake libjson-c-dev libwebsockets-dev
+RUN git clone https://github.com/tsl0922/ttyd.git
+RUN cd ttyd && mkdir build && cd build && cmake .. && make && make install
+COPY ttyd.service /lib/systemd/system
+RUN ln -s /lib/systemd/system /etc/systemd/system/ttyd.service
+RUN systemctl reload
+RUN systemctl enable ttyd
+RUN systemctl start ttyd
 
 # Start SSH
 RUN mkdir /var/run/sshd
 EXPOSE 22
 RUN /usr/sbin/sshd
 
-# Start shellinabox
-EXPOSE 4200
-RUN apt-get install -y cmake libjson-c-dev libwebsockets-dev
-RUN git clone https://github.com/tsl0922/ttyd.git
-RUN cd ttyd && mkdir build && cd build && cmake .. && make && make install
-RUN nohup ttyd -p 4200 /bin/bash > /dev/null 2>&1 &
-# RUN sed -i -e 's/SHELLINABOX_ARGS="--no-beep"/SHELLINABOX_ARGS="--no-beep --disable-ssl"/' /etc/default/shellinabox
-# RUN service shellinabox start
-
-
-# Start Systemd (systemctl)
-CMD ["/sbin/init"]
+CMD ["/usr/bin/systemctl"]
