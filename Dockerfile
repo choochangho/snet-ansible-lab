@@ -38,6 +38,8 @@ RUN chown -R vagrant:vagrant /home/vagrant/.ssh
 RUN sed -i -e 's/Defaults.*requiretty/#&/' /etc/sudoers
 RUN sed -i -e 's/\(UsePAM \)yes/\1 no/' /etc/ssh/sshd_config
 
+# Systemctl Replacement
+# https://github.com/gdraheim/docker-systemctl-images
 RUN wget https://raw.githubusercontent.com/gdraheim/docker-systemctl-replacement/master/files/docker/systemctl3.py -O /usr/bin/systemctl
 RUN chmod +x /usr/bin/systemctl
 
