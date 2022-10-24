@@ -23,7 +23,6 @@ RUN apt update \
 # Install system dependencies, you may not need all of these
 RUN apt-get install -y --no-install-recommends ssh sudo libffi-dev systemd openssh-client
 RUN apt update && apt-get -y install net-tools iputils-ping git wget
-# RUN  apt-get -y install git libssl-dev libpam0g-dev zlib1g-dev dh-autoreconf shellinabox
 
 # Add vagrant user and key for SSH
 RUN useradd --create-home -s /bin/bash vagrant
@@ -37,6 +36,12 @@ RUN chmod 600 /home/vagrant/.ssh/authorized_keys
 RUN chown -R vagrant:vagrant /home/vagrant/.ssh
 RUN sed -i -e 's/Defaults.*requiretty/#&/' /etc/sudoers
 RUN sed -i -e 's/\(UsePAM \)yes/\1 no/' /etc/ssh/sshd_config
+
+# Locale 설정
+RUN apt-get -y install language-pack-ko
+RUN locale-gen ko_KR.UTF-8
+RUN echo "export LANGUAGE=ko_KR.UTF-8" >> /home/vagrant/.bashrc
+RUN echo "export LANG=ko_KR.UTF-8" >> /home/vagrant/.bashrc
 
 # Systemctl Replacement
 # https://github.com/gdraheim/docker-systemctl-images
