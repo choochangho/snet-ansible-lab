@@ -1,0 +1,28 @@
+---
+- hosts: webserver
+  become: true
+
+  tasks:
+  - name: Install Nginx webserver
+    ansible.builtin.package:
+      name: nginx
+      state: latest
+    when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  
+  - name: Start Nginx
+    ansible.builtin.service:
+      name: nginx
+      enabled: True
+      state: started
+
+  - name: Stop Nginx
+    ansible.builtin.service:
+      name: nginx
+      enabled: False
+      state: stopped
+  
+  - name: Remove nginx
+    ansible.builtin.apt:
+      name: nginx
+      state: absent
+    when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
