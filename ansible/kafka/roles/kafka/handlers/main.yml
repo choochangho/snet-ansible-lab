@@ -1,2 +1,14 @@
 ---
 # handlers file for kafka
+
+- name: daemon reload
+  become: True
+  ansible.builtin.systemd:
+    daemon-reload: True
+
+- name: kafka service start on boot
+  become: True
+  ansible.builtin.systemd:
+    name: kafka.service
+    enabled: True
+...

@@ -1,0 +1,15 @@
+[Unit]
+Description=kafka-server service
+After=network.target
+
+[Service]
+Type=simple
+User={{ KAFKA_USER }}
+Group={{ KAFKA_GROUP }}
+SyslogIdentifier=kafka-server
+ExecStart={{ KAFKA_HOME }}/bin/kafka-server-start.sh {{ KAFKA_HOME }}/config/server.properties
+ExecStop={{ KAFKA_HOME }}/bin/kafka-server-stop.sh
+Restart=on-abnormal
+
+[Install]
+WantedBy=multi-user.target

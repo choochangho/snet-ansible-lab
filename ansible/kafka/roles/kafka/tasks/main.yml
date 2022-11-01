@@ -1,2 +1,133 @@
 ---
 # tasks file for kafka
+
+- name: Create kafka group
+  ansible.builtin.group:
+    name: "{{ KAFKA_GROUP }}"
+    state: present
+    system: yes
+  when: KAFKA_CREATE_USER_GROUP | bool
+  tags:
+    - kafka_group
+
+- name: Create kafka user
+  ansible.builtin.user:
+    name: "{{ KAFKA_USER }}"
+    group: "{{ KAFKA_GROUP }}"
+    state: present
+    createhome: no
+    system: yes
+  when: KAFKA_CREATE_USER_GROUP | bool
+  tags:
+    - kafka_user
+
+# 카프카 설치 여부 확인을 위한 변수 등록
+- name: Check if kafka has already been downloaded and unpacked
+  ansible.builtin.stat:
+    path: "{{ KAFKA_HOME }}"
+  register: home_dir
+
+# 카프카 디렉토리 생성
+- name: Creates kafka directory {{ KAFKA_HOME }}
+  ansible.builtin.file:
+    path: "{{ KAFKA_HOME }}"
+    state: directory
+    owner: "{{ KAFKA_USER }}"
+    group: "{{ KAFKA_GROUP }}"
+    mode: 0755
+  when: not home_dir.stat.exists
+
+# 카프카 바이너리 다운로드 및 압축해제
+- name: Download Kafka Binary File
+  ansible.builtin.get_url:
+    url: "{{ KAFKA_MIRROR }}/{{ KAFKA_PACKAGE }}"
+    dest: /tmp
+  when: not home_dir.stat.exists
+
+# 압축해제된 카프카를 /usr/local로 이동
+- name: Unpack Apache kafka
+  ansible.builtin.unarchive:
+    src: /tmp/{{ KAFKA_PACKAGE }}
+    dest: "{{ KAFKA_HOME }}"
+    copy: no
+    extra_opts: [--strip-components=1]
+    group: "{{ KAFKA_GROUP }}"
+    owner: "{{ KAFKA_USER }}"
+  when: not home_dir.stat.exists
+
+# 데이터 디렉토리 생성
+- name: Create data directory
+  ansible.builtin.file:
+    path: "{{ KAFKA_DATA_DIR }}"
+    state: directory
+    owner: "{{ KAFKA_GROUP }}"
+    group: "{{ KAFKA_USER }}"
+    mode: 0755
+  when: not home_dir.stat.exists
+
+# 로그 디렉토리 생성
+- name: Create kafka log directory
+  ansible.builtin.file:
+    path: "{{ KAFKA_LOG_DIR }}"
+    state: directory
+    group: "{{ KAFKA_GROUP }}"
+    owner: "{{ KAFKA_USER }}"
+    mode: 0755
+
+# 설정파일 복사 - server.properties
+- name: Copy kafka server.properties
+  ansible.builtin.template:
+    src: ../templates/server.properties.j2
+    dest: "{{ KAFKA_HOME }}/config/server.properties"
+    group: "{{ KAFKA_GROUP }}"
+    owner: "{{ KAFKA_USER }}"
+  register: configuration
+
+# 설정파일 복사 - log4j.properties
+- name: Copy kafka log4j.properties
+  ansible.builtin.template:
+    src: ../templates/log4j.properties.j2
+    dest: "{{ KAFKA_HOME }}/config/log4j.properties"
+    group: "{{ KAFKA_GROUP }}"
+    owner: "{{ KAFKA_USER }}"
+
+# 기동파일 복사 - kafka-server-start.sh
+- name: Copy kafka-server-start.sh
+  template:
+    src: ../templates/kafka-server-start.sh.j2
+    dest: "{{ KAFKA_HOME }}/bin/kafka-server-start.sh"
+    group: "{{ KAFKA_GROUP }}"
+    owner: "{{ KAFKA_USER }}"
+  register: start_script
+
+# 서비스 등록
+- name: Add Systemd Kafka Service
+  ansible.builtin.template:
+    src: ../templates/kafka.service.j2
+    dest: "/lib/systemd/system/kafka.service"
+    mode: "u+rw"
+  become: True
+  register: configuration
+  notify:
+    - kafka service start on boot
+    - daemon reload
+
+- name: kafka service start
+  become: True
+  ansible.builtin.systemd:
+    name: kafka
+    state: started
+  
+- name: kafka service restart
+  become: True
+  ansible.builtin.systemd:
+    name: kafka.service
+    state: restarted
+  when: configuration.changed or start_script.changed
+
+# 다운로드 받은 압축 파일 삭제
+- name: Delete /tmp/{{ KAFKA_PACKAGE }} file
+  ansible.builtin.file:
+    path: /tmp/{{ KAFKA_PACKAGE }}
+    state: absent
+...

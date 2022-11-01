@@ -112,8 +112,24 @@
   become: True
   register: system_unit
   notify:
+    - Enable service zookeeper
     - daemon reload
-    - Start Zookeeper
+
+# 주키퍼 시작
+- name: Start Zookeeper
+  ansible.builtin.systemd:
+    name: zookeeper.service
+    enabled: True
+    state: started
+  become: True
+
+# 주키퍼 재시작
+- name: Restart Zookeeper
+  become: True
+  ansible.builtin.systemd:
+    name: zookeeper
+    state: restarted
+  when: system_unit.changed or config.changed or log_config.changed
 
 # 다운로드 받은 압축 파일 삭제
 - name: Delete /tmp/apache-zookeeper-{{ ZOOKEEPER_VERSION }}-bin.tar.gz file

@@ -1,0 +1,20 @@
+---
+- hosts: all
+  roles:
+    - role: java
+      tags:
+        - zookeeper
+        - kafka
+
+- hosts: zookeeper
+  roles:
+    - role: zookeeper
+      tags:
+        - zookeeper
+
+- hosts: kafka
+  roles:
+    - role: kafka
+      tags:
+        - kafka
+...

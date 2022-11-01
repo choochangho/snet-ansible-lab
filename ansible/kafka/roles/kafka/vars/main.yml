@@ -1,2 +1,28 @@
 ---
 # vars file for kafka
+
+# kafka version, scala version
+KAFKA_VERSION: 2.8.1
+SCALA_VERSION: 2.13
+
+# kafka user,group
+KAFKA_CREATE_USER_GROUP: True
+KAFKA_GROUP: kafka
+KAFKA_USER: kafka
+
+# kafka mirror / package
+KAFKA_MIRROR: https://archive.apache.org/dist/kafka/{{ KAFKA_VERSION }}
+KAFKA_PACKAGE: kafka_{{ SCALA_VERSION }}-{{ KAFKA_VERSION }}.tgz
+
+# kafka directory
+KAFKA_HOME: "/usr/local/kafka_{{ SCALA_VERSION }}-{{ KAFKA_VERSION }}"
+KAFKA_DATA_DIR: "/data/kafka/data"
+KAFKA_LOG_DIR: "/data/kafka/logs"
+
+# kafka proxy server
+# kafka_proxy_server: 175.45.201.196
+# kafka port
+KAFKA_BROKER_CLIENT_PORT: 9092
+KAFKA_BROKER_EXT_PORT: 9095
+KAFKA_BROKER_JMX_PORT: 9999
+ZOOKEEPER_CLIENT_PORT: 2181
