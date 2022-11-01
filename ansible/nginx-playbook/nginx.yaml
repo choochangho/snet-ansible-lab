@@ -1,0 +1,32 @@
+---
+- hosts: webserver
+  
+  tasks:
+  - name: Install Nginx webserver
+    ansible.builtin.apt:
+      name: nginx
+      state: latest
+    become: True
+    when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+  - name: Copy Nginx VirtualServer Configuration
+    ansible.builtin.template:
+      src: ./templates/default.j2
+      dest: "/etc/nginx/sites-available/default"
+    become: True
+    register: config
+
+  - name: Start Nginx
+    ansible.builtin.service:
+      name: nginx
+      enabled: True
+      state: started
+    become: True
+
+  - name: Reload service nginx
+    ansible.builtin.service:
+      name: nginx
+      state: restarted
+    become: True
+    when: config.changed
+...

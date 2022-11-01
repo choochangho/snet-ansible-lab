@@ -1,0 +1,23 @@
+---
+# vars file for zookeeper
+
+# zookeeper version / mirror / package
+ZOOKEEPER_VERSION: 3.8.0
+ZOOKEEPER_MIRROR: https://dlcdn.apache.org/zookeeper/zookeeper-{{ ZOOKEEPER_VERSION }}
+ZOOKEEPER_PACKAGE: apache-zookeeper-{{ ZOOKEEPER_VERSION }}-bin.tar.gz
+
+# zookeeper user,group
+ZOOKEEPER_CREATE_USER_GROUP: True
+ZOOKEEPER_GROUP: zookeeper
+ZOOKEEPER_USER: zookeeper
+
+# zookeeper directory(data and log)
+ZOOKEEPER_HOME: /usr/local/apache-zookeeper-{{ ZOOKEEPER_VERSION }}
+ZOOKEEPER_DATA_DIR: /data/zk/data
+ZOOKEEPER_LOG_DIR: /data/zk/logs
+
+# zookeeper port
+ZOOKEEPER_SYNC_PORT: 2888
+ZOOKEEPER_LEADER_PORT: 3888
+ZOOKEEPER_JMX_PORT: 7000
+...

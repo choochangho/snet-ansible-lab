@@ -1,0 +1,14 @@
+[all]
+server1
+server2
+server3
+
+[zookeeper]
+server1         myid=1
+server2         myid=2
+server3         myid=3
+
+[kafka]
+server1         broker_id=1
+server2         broker_id=2
+server3         broker_id=3

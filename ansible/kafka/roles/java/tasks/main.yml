@@ -1,0 +1,11 @@
+---
+# tasks file for java
+- name: Install openjdk
+  ansible.builtin.apt:
+    name: openjdk-{{ JDK_VERSION }}-jdk
+    update_cache: True
+    force_apt_get: True
+    cache_valid_time: 3600
+    state: present
+  become: True
+...

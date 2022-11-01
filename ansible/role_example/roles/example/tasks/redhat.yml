@@ -1,0 +1,6 @@
+---
+# roles/example/tasks/redhat.yml
+- yum:
+    name: "httpd"
+    state: present
+...

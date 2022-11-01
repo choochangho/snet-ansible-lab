@@ -1,0 +1,7 @@
+[all]
+server1
+server2
+
+[webserver]
+server1           http_port=8080         hello=world
+server2           http_port=8181         hello=ansible

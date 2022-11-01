@@ -1,0 +1,123 @@
+---
+# tasks file for zookeeper
+#
+# https://www.toptechskills.com/ansible-tutorials-courses/ansible-service-module-tutorial-examples/
+#
+
+- name: Create zookeeper group
+  ansible.builtin.group:
+    name: "{{ ZOOKEEPER_GROUP }}"
+    state: present
+    system: yes
+  when: ZOOKEEPER_CREATE_USER_GROUP | bool
+  tags:
+    - zookeeper_group
+
+- name: Create zookeeper user
+  ansible.builtin.user:
+    name: "{{ ZOOKEEPER_USER }}"
+    group: "{{ ZOOKEEPER_GROUP }}"
+    state: present
+    createhome: no
+    system: yes
+  when: ZOOKEEPER_CREATE_USER_GROUP | bool
+  tags:
+    - zookeeper_user
+
+- name: Check if ZooKeeper has already been downloaded and unpacked
+  ansible.builtin.stat:
+    path: "{{ ZOOKEEPER_HOME }}"
+  register: home_dir
+
+# 주키퍼 바이너리 다운로드
+- name: Download Zookeeper Binary File
+  ansible.builtin.get_url:
+    url: "{{ ZOOKEEPER_MIRROR }}/{{ ZOOKEEPER_PACKAGE }}"
+    dest: /tmp
+  when: not home_dir.stat.exists
+
+# 주키퍼 디렉토리 생성
+- name: Creates Zookeeper directory {{ ZOOKEEPER_HOME }}
+  ansible.builtin.file:
+    path: "{{ ZOOKEEPER_HOME }}"
+    state: directory
+    owner: "{{ ZOOKEEPER_USER }}"
+    group: "{{ ZOOKEEPER_GROUP }}"
+    mode: 0755
+  when: not home_dir.stat.exists
+
+# 압축해제된 주키퍼를 /usr/local로 이동
+- name: Unpack Apache ZooKeeper
+  ansible.builtin.unarchive:
+    src: /tmp/apache-zookeeper-{{ ZOOKEEPER_VERSION }}-bin.tar.gz
+    dest: "{{ ZOOKEEPER_HOME }}"
+    copy: no
+    extra_opts: [--strip-components=1]
+    group: "{{ ZOOKEEPER_GROUP }}"
+    owner: "{{ ZOOKEEPER_USER }}"
+  when: not home_dir.stat.exists
+
+# 데이터 디렉토리 생성
+- name: Create directory for snapshot files and myid file
+  ansible.builtin.file:
+    path: "{{ ZOOKEEPER_DATA_DIR }}"
+    state: directory
+    owner: "{{ ZOOKEEPER_GROUP }}"
+    group: "{{ ZOOKEEPER_USER }}"
+    mode: 0755
+  when: not home_dir.stat.exists
+
+# myid 추가
+- name: Create myid file
+  ansible.builtin.copy:
+    dest: "{{ ZOOKEEPER_DATA_DIR }}/myid"
+    content: |
+      {{ myid }}
+    owner: "{{ ZOOKEEPER_GROUP }}"
+    group: "{{ ZOOKEEPER_USER }}"
+    mode: 0755
+
+- name: Create zookeeper log directory
+  ansible.builtin.file:
+    path: "{{ ZOOKEEPER_LOG_DIR }}"
+    state: directory
+    group: "{{ ZOOKEEPER_GROUP }}"
+    owner: "{{ ZOOKEEPER_USER }}"
+    mode: 0755
+
+# 설정파일 복사
+- name: Copy zookeeper configuration
+  ansible.builtin.template:
+    src: ../templates/zoo.cfg.j2
+    dest: "{{ ZOOKEEPER_HOME }}/conf/zoo.cfg"
+    group: "{{ ZOOKEEPER_GROUP }}"
+    owner: "{{ ZOOKEEPER_USER }}"
+  register: config
+
+# log4j.properties 복사
+- name: Copy zookeeper log configuration
+  ansible.builtin.template:
+    src: ../templates/log4j.properties.j2
+    dest: "{{ ZOOKEEPER_HOME }}/conf/log4j.properties"
+    group: "{{ ZOOKEEPER_GROUP }}"
+    owner: "{{ ZOOKEEPER_USER }}"
+  register: log_config
+
+# 서비스 등록
+- name: Add Systemd Zookeeper Service
+  ansible.builtin.template:
+    src: ../templates/zookeeper.service.j2
+    dest: "/lib/systemd/system/zookeeper.service"
+    mode: "u+rw"
+  become: True
+  register: system_unit
+  notify:
+    - daemon reload
+    - Start Zookeeper
+
+# 다운로드 받은 압축 파일 삭제
+- name: Delete /tmp/apache-zookeeper-{{ ZOOKEEPER_VERSION }}-bin.tar.gz file
+  ansible.builtin.file:
+    path: /tmp/apache-zookeeper-{{ ZOOKEEPER_VERSION }}-bin.tar.gz
+    state: absent
+...

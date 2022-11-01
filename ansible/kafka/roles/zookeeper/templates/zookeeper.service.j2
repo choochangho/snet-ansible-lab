@@ -1,0 +1,23 @@
+[Unit]
+Description=Apache Zookeeper
+Documentation=http://zookeeper.apache.org
+Requires=network.target
+After=network.target
+
+
+[Service]
+Type=forking
+User={{ ZOOKEEPER_USER }}
+Group={{ ZOOKEEPER_GROUP }}
+SyslogIdentifier=zookeeper-server
+WorkingDirectory={{ ZOOKEEPER_HOME }}
+SuccessExitStatus=143
+Restart=on-failure
+StartLimitBurst=2
+StartLimitInterval=30
+ExecStart={{ ZOOKEEPER_HOME }}/bin/zkServer.sh start
+ExecStop={{ ZOOKEEPER_HOME }}/bin/zkServer.sh stop
+
+[Install]
+WantedBy=multi-user.target
+Alias=zookeeper.service

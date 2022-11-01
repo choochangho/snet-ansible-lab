@@ -1,0 +1,7 @@
+---
+- hosts: zookeeper
+  roles:
+    - role: zookeeper
+      tags:
+        - zookeeper
+...

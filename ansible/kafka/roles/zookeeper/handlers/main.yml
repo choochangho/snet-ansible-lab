@@ -1,0 +1,26 @@
+---
+# handlers file for zookeeper
+
+- name: daemon reload
+  systemd:
+    name: zookeeper
+    state: restarted
+    daemon-reload: True
+  become: True
+
+# 주키퍼 시작
+- name: Start Zookeeper
+  ansible.builtin.service:
+    name: zookeeper
+    enabled: True
+    state: started
+  become: True
+
+# 주키퍼 재시작
+- name: Restart Zookeeper
+  become: True
+  service:
+    name: zookeeper
+    state: restarted
+  when: system_unit.changed or config.changed or config.changed
+...
