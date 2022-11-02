@@ -11,10 +11,12 @@
     - role: zookeeper
       tags:
         - zookeeper
+        - java
 
 - hosts: kafka
   roles:
     - role: kafka
       tags:
         - kafka
+        - java
 ...
