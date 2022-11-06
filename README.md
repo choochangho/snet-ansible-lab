@@ -2,6 +2,8 @@
 
 ## WSL 
 
+:exclamation: 윈도우 사용시 필수!!
+
 설치방법 참고 [윈도우 10, WSL, Docker](https://velog.io/@hanjuli94/%EC%9C%88%EB%8F%84%EC%9A%B0%EC%97%90%EC%84%9C-%EB%8F%84%EC%BB%A4-%EC%8B%A4%EC%8A%B5%ED%95%98%EA%B8%B0)
 
 ## 작업 디렉토리 생성
@@ -54,7 +56,7 @@ http://localhost:8000
 
 ## Mac M1/M2 사용자를 위한 Tip
 
-:fire: Dockerfile 과 Dockerfile-ansible의 base image를 다음과 같이 변경하면 호스트 CPU와 동일한 아키텍쳐를 사용하므로써 성능향상에 도움이 된다.
+:fire: Dockerfile 과 Dockerfile-ansible 의 base image를 다음과 같이 변경하면 호스트 CPU와 동일한 아키텍쳐를 사용하므로써 성능향상에 도움이 된다.
 
 ```
 FROM arm64v8/ubuntu:20.04
