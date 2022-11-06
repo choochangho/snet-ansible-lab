@@ -51,3 +51,11 @@ docker-compose up [-d]
 ## 대시보드 확인
 
 http://localhost:8000
+
+## Mac M1/M2 사용자를 위한 Tip
+
+:fire: Dockerfile 의 base image를 다음과 같이 변경하면 Native CPU와 동일한 아키텍쳐를 사용하므로써 성능향상에 도움이 된다.
+
+```
+FROM arm64v8/ubuntu:20.04
+```
