@@ -23,7 +23,7 @@ mkdir mysqldata
 mkdir semaphore
 ```
 
-## (Option)Dockerfile 수정
+## docker-compose 수정
 
 docker-compose.yaml에서 호스트의 CPU 아키텍쳐에 맞는 이미지 사용하도록 수정
 
@@ -44,12 +44,15 @@ docker-compose.yaml에서 호스트의 CPU 아키텍쳐에 맞는 이미지 사�
 `image: mysql` 을 다음과 같이 수정한다.
 
 - Intel/AMD : `image: mysql`
-- Apple 실리콘(m1/m2) : `image: arm64v8/mysql`
+- 애플 실리콘(m1/m2) : `image: arm64v8/mysql`
 
 ## 컨테이너 빌드 및 실행
 
 ```bash
-docker-compose up [-d]
+# Foreground
+docker-compose up
+# or Background
+docker-compose up -d
 ```
 
 ## 대시보드 확인
