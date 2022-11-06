@@ -29,7 +29,7 @@ services:
     ports:
       # SSH
       - "2220:22"
-      # shellinabox
+      # ttyd
       - "4200:4200"
       # dashboard
       - "8000:80"
