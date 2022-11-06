@@ -4,7 +4,9 @@
 
 :exclamation: 윈도우 사용시 필수!!
 
-설치방법 참고 [윈도우 10, WSL, Docker](https://velog.io/@hanjuli94/%EC%9C%88%EB%8F%84%EC%9A%B0%EC%97%90%EC%84%9C-%EB%8F%84%EC%BB%A4-%EC%8B%A4%EC%8A%B5%ED%95%98%EA%B8%B0)
+- 설치방법 참고 [윈도우 10, WSL, Docker](https://velog.io/@hanjuli94/%EC%9C%88%EB%8F%84%EC%9A%B0%EC%97%90%EC%84%9C-%EB%8F%84%EC%BB%A4-%EC%8B%A4%EC%8A%B5%ED%95%98%EA%B8%B0)
+
+- docs/00.Windows_docker_설치_가이드.pdf 참고
 
 ## 작업 디렉토리 생성
 
