@@ -8,19 +8,19 @@
 
 - docs/00.Windows_docker_설치_가이드.pdf 참고
 
-## 작업 디렉토리 생성
-
-```bash
-mkdir snet-group-ansible
-cd snet-group-ansible
-mkdir mysqldata
-mkdir semaphore
-```
-
 ## 소스코드 clone
 
 ```bash
-git clone https://github.com/choochangho/snet-ansible-lab.git .
+git clone https://github.com/choochangho/snet-ansible-lab.git
+```
+
+
+## 작업 디렉토리 생성
+
+```bash
+cd snet-group-ansible-lab
+mkdir mysqldata
+mkdir semaphore
 ```
 
 ## (Option)Dockerfile 수정
